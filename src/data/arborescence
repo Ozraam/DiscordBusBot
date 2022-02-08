@@ -1,0 +1,6 @@
+is-NextDepartures-Row
+
+is-NextDepartures-Row -> is-Line-C1 //numeroDeLaLigne  
+is-NextDepartures-Row -> is-NextDepartures-Cell-C2 //nomDeLaDestination
+is-NextDepartures-Row -> is-NextDeparture-Time-Value //temps avant le prochain
+is-NextDepartures-Row -> is-NextDeparture-Time-Value -> is-path2 //temps avant le prochain si is-NextDepartures-Time-Value > 1
