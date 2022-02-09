@@ -22,11 +22,11 @@ export async function getNextPassage(url: string) {
             //recupere le temps avant le/les prochains bus
             let AllTimes = bus.querySelectorAll(".is-NextDeparture-Time-Value");
             let times = [];
-            for(let t of AllTimes) {
-                for(let child of t.childNodes) {
-                    if (child instanceof  TextNode) {
+            for (let t of AllTimes) {
+                for (let child of t.childNodes) {
+                    if (child instanceof TextNode) {
                         let value = child.rawText.trim();
-                        if(value.length > 0) {
+                        if (value.length > 0) {
                             times.push(value);
                         }
                     }
@@ -50,24 +50,37 @@ export async function getNextPassage(url: string) {
 }
 
 
-
-export function find(toFind:string, arr:any) {
-
-    if(toFind.length == 0) {
-        return [];
+function compare(A: string, B: string) {
+    let len = A.length > B.length ? B.length : A.length;
+    let score = 0;
+    for (let index = 0; index < len; index++) {
+        if (A[index] == B[index]) score++;
     }
-    toFind = toFind.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
+    return score;
+}
+
+
+function _find(toFind: string, arr: any) {
+    let score = [];
     
+    for (let i = 0; i < arr.length; i++) {
+        let sc = compare(arr[i].name, toFind);
+        if (sc != 0) score.push([sc, i]);
+    }
+    
+    score.sort((a, b) => { return a[0] - b[0]; });
+    console.log(score.slice(0,5));
+    return score
+}
+
+export function find(toFind: string, arr: any) {
+
     let findi = [];
-    for(let occ of arr) {
-        
-        
-        if(occ.name.startsWith(toFind)) {
-            findi.push(occ);
-        }
+    let score = _find(toFind, arr);
+    for (const sc of score) {
+        findi.push(arr[sc[1]]);
     }
-    if(findi.length == 0) {
-        findi = find(toFind.slice(0,toFind.length-1), arr);
-    }
+    //console.log(findi.slice(0,5));
+    
     return findi
 }
