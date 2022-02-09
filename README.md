@@ -6,6 +6,8 @@ This is a simple bot used to track next bus in each stops of the city Metz - Fra
 
 * [General Info](#general-info)
 * [Technologies](#technologies)
+* [Setup](#setup)
+* [Bot command]($)
 
 ## General Info
 
@@ -25,6 +27,10 @@ Using discord as an interface to ask the program the stops.
 * use npm install
 * create a file TOKEN.json in /src and add
 {
-
+    "token":"TOKEN HERE"
 }
 * use npm start
+
+## Bot Command
+
+* !a StopName  exemple: !a republique
