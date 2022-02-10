@@ -68,15 +68,16 @@ function _find(toFind: string, arr: any) {
         if (sc != 0) score.push([sc, i]);
     }
     
-    score.sort((a, b) => { return a[0] - b[0]; });
+    score.sort((a, b) => { return -(a[0] - b[0]); });
     console.log(score.slice(0,5));
     return score
 }
 
 export function find(toFind: string, arr: any) {
-
+    toFind = toFind.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     let findi = [];
     let score = _find(toFind, arr);
+    
     for (const sc of score) {
         findi.push(arr[sc[1]]);
     }
