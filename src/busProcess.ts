@@ -1,6 +1,9 @@
 import fetch from "node-fetch";
 import { parse, TextNode } from 'node-html-parser';
 
+
+
+
 export async function getNextPassage(url: string) {
     const response = await fetch(url);
     if (response.ok) {
@@ -18,10 +21,11 @@ export async function getNextPassage(url: string) {
         for (let bus of allBusInfo) {
             let nameZone = bus.querySelector(".is-NextDepartures-Cell_Destination").querySelector(".is-NextDepartures-Cell-C2")
             let name: string = nameZone.childNodes[0].rawText.trim()
+            let lianeName = bus.querySelector(".is-Line-C1").childNodes[0].rawText
 
             //recupere le temps avant le/les prochains bus
             let AllTimes = bus.querySelectorAll(".is-NextDeparture-Time-Value");
-            let times = [];
+            let times : string[]= [];
             for (let t of AllTimes) {
                 for (let child of t.childNodes) {
                     if (child instanceof TextNode) {
@@ -35,7 +39,8 @@ export async function getNextPassage(url: string) {
             //add the bus direction and times in the array
             let current = {
                 name: name,
-                times: times
+                times: times,
+                shortName: lianeName
             };
             allBus.push(current);
         }
@@ -60,11 +65,11 @@ function compare(A: string, B: string) {
 }
 
 
-function _find(toFind: string, arr: any) {
+function _find(toFind: string, arr: any, select = (x: any) => x) {
     let score = [];
     
     for (let i = 0; i < arr.length; i++) {
-        let sc = compare(arr[i].name, toFind);
+        let sc = compare(select(arr[i]), toFind);
         if (sc != 0) score.push([sc, i]);
     }
     
@@ -73,10 +78,10 @@ function _find(toFind: string, arr: any) {
     return score
 }
 
-export function find(toFind: string, arr: any) {
+export function find(toFind: string, arr: any, select = (x: any) => x.name) {
     toFind = toFind.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
     let findi = [];
-    let score = _find(toFind, arr);
+    let score = _find(toFind, arr, select);
     
     for (const sc of score) {
         findi.push(arr[sc[1]]);
