@@ -16,7 +16,7 @@ class UserFilter {
 }
 
 function readToken() {
-    let token : Token = JSON.parse(readFileSync("./src/TOKEN.json").toString());
+    let token : Token = {token: process.env.TOKEN}
     return token;
 }
 
