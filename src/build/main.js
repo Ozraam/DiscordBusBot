@@ -70,6 +70,39 @@ function filtre(buss, user) {
     else
         return buss;
 }
+function setEmebd(bus_, message) {
+    return __awaiter(this, void 0, void 0, function () {
+        var lineTime, embed, _i, lineTime_1, buss, times, _a, _b, tim;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, bus.getNextPassage(bus_.url)];
+                case 1:
+                    lineTime = _c.sent();
+                    lineTime = filtre(lineTime, message.author);
+                    embed = new discord_js_1.MessageEmbed().setTitle(bus_.name)
+                        .setThumbnail("https://storage.googleapis.com/is-wp-55-prod/uploads-prod/2020/03/cropped-logo_met_min-1.png")
+                        .setAuthor({ name: "Ozraam", iconURL: "https://styles.redditmedia.com/t5_w4hl3/styles/profileIcon_k1wvp2mtezk81.png" });
+                    console.log(lineTime);
+                    for (_i = 0, lineTime_1 = lineTime; _i < lineTime_1.length; _i++) {
+                        buss = lineTime_1[_i];
+                        times = "";
+                        for (_a = 0, _b = buss.times; _a < _b.length; _a++) {
+                            tim = _b[_a];
+                            times += tim;
+                            if (!tim.includes(":"))
+                                times += " min";
+                            times += "\n";
+                        }
+                        if (times.trim().length == 0)
+                            times = "null";
+                        embed.addField(buss.name, times);
+                    }
+                    message.channel.send({ embeds: [embed] });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 var Bot = /** @class */ (function () {
     function Bot(token) {
         var _this = this;
@@ -87,12 +120,10 @@ var Bot = /** @class */ (function () {
     }
     Bot.prototype.onMessage = function (message) {
         return __awaiter(this, void 0, void 0, function () {
-            var line, bus_, lineTime, embed, _i, lineTime_1, buss, times, _a, _b, tim, cmd, line, lineTime, embed, _c, lineTime_2, buss, times, _d, _e, tim, lines, embed, f, n, _f, lines_1, line, fil_1, fil_2, fil;
-            return __generator(this, function (_g) {
-                switch (_g.label) {
-                    case 0:
-                        if (!(attenteSuggestion.size > 0)) return [3 /*break*/, 2];
-                        if (!attenteSuggestion.has(message.author)) return [3 /*break*/, 2];
+            var line, bus_, cmd, line, lines, embed, f, n, _i, lines_1, line, fil_1, fil_2, fil, embed;
+            return __generator(this, function (_a) {
+                if (attenteSuggestion.size > 0) {
+                    if (attenteSuggestion.has(message.author)) {
                         console.log("".concat(message.author.username + message.author.discriminator, " request ").concat(message.content));
                         line = Number(message.content.trim());
                         if (isNaN(line)) {
@@ -103,122 +134,92 @@ var Bot = /** @class */ (function () {
                             return [2 /*return*/];
                         line--;
                         bus_ = attenteSuggestion.get(message.author)[line];
-                        return [4 /*yield*/, bus.getNextPassage(bus_.url)];
-                    case 1:
-                        lineTime = _g.sent();
-                        lineTime = filtre(lineTime, message.author);
-                        embed = new discord_js_1.MessageEmbed().setTitle(bus_.name);
-                        console.log(lineTime);
-                        for (_i = 0, lineTime_1 = lineTime; _i < lineTime_1.length; _i++) {
-                            buss = lineTime_1[_i];
-                            times = "";
-                            for (_a = 0, _b = buss.times; _a < _b.length; _a++) {
-                                tim = _b[_a];
-                                times += tim;
-                                if (!tim.includes(":"))
-                                    times += " min";
-                                times += "\n";
-                            }
-                            if (times.trim().length == 0)
-                                times = "null";
-                            embed.addField(buss.name, times);
-                        }
-                        message.channel.send({ embeds: [embed] });
+                        setEmebd(bus_, message);
                         return [2 /*return*/];
-                    case 2:
-                        if (message.author.bot || !message.content.startsWith("!"))
-                            return [2 /*return*/];
-                        cmd = message.content.replace("!", "");
-                        if (!cmd.startsWith("a")) return [3 /*break*/, 4];
-                        cmd = cmd.replace("a", "").trim();
-                        line = bus.find(cmd, stops)[0];
-                        return [4 /*yield*/, bus.getNextPassage(line.url)];
-                    case 3:
-                        lineTime = _g.sent();
-                        lineTime = filtre(lineTime, message.author);
-                        embed = new discord_js_1.MessageEmbed().setTitle(line.name);
-                        console.log(lineTime);
-                        for (_c = 0, lineTime_2 = lineTime; _c < lineTime_2.length; _c++) {
-                            buss = lineTime_2[_c];
-                            times = "";
-                            for (_d = 0, _e = buss.times; _d < _e.length; _d++) {
-                                tim = _e[_d];
-                                times += tim;
-                                if (!tim.includes(":"))
-                                    times += " min";
-                                times += "\n";
-                            }
-                            if (times.trim().length == 0)
-                                times = "null";
-                            embed.addField(buss.name, times);
-                        }
-                        message.channel.send({ embeds: [embed] });
-                        return [3 /*break*/, 5];
-                    case 4:
-                        if (cmd.startsWith("l")) {
-                            cmd = cmd.replace("l", "").trim();
-                            lines = bus.find(cmd, stops).slice(0, 10);
-                            embed = new discord_js_1.MessageEmbed().setTitle("Arret sugérer");
-                            f = "";
-                            n = 1;
-                            for (_f = 0, lines_1 = lines; _f < lines_1.length; _f++) {
-                                line = lines_1[_f];
-                                f += n + " - " + line.name + "\n";
-                                n++;
-                            }
-                            embed.addField("Arret (par ordre du plus probable):", f);
-                            embed.description = "Taper 1-10 pour afficher les prochain passage";
-                            message.channel.send({ embeds: [embed] });
-                            attenteSuggestion.set(message.author, lines);
-                            console.log(attenteSuggestion.size);
-                        }
-                        // Commande !f
-                        else if (cmd.startsWith("f")) {
-                            cmd = cmd.replace("f", "").trim();
-                            if (cmd == "switch") {
-                                if (!fliterConfig.has(message.author))
-                                    return [2 /*return*/];
-                                fil_1 = fliterConfig.get(message.author);
-                                fil_1.on = !fil_1.on;
-                                fliterConfig.set(message.author, fil_1);
-                                message.channel.send("Filter for ".concat(message.author, " has been set on ").concat(fil_1.on ? "ON" : "OFF"));
-                                return [2 /*return*/];
-                            }
-                            else if (cmd.startsWith("remove") || cmd.startsWith("r ")) {
-                                if (cmd.startsWith("remove"))
-                                    cmd = cmd.replace("remove", "").trim();
-                                else
-                                    cmd = cmd.replace("r", "").trim();
-                                fil_2 = fliterConfig.get(message.author);
-                                if (fil_2.list.includes(cmd)) {
-                                    fil_2.list.splice(fil_2.list.indexOf(cmd), 1);
-                                }
-                                if (fil_2.list.length != 0) {
-                                    fliterConfig.set(message.author, fil_2);
-                                    message.channel.send("".concat(message.author, " filtre ").concat(cmd, " supprimer"));
-                                }
-                                else {
-                                    fliterConfig["delete"](message.author);
-                                    message.channel.send("".concat(message.author, " Plus aucun filtre, retour aux filtre par defaut"));
-                                }
-                                return [2 /*return*/];
-                            }
-                            if (!fliterConfig.has(message.author)) {
-                                fliterConfig.set(message.author, new UserFilter());
-                            }
-                            fil = fliterConfig.get(message.author);
-                            fil.list.push(cmd);
-                            fliterConfig.set(message.author, fil);
-                            message.channel.send("Filtre ajouter");
-                        }
-                        _g.label = 5;
-                    case 5: return [2 /*return*/];
+                    }
                 }
+                if (message.author.bot || !message.content.startsWith(prefix))
+                    return [2 /*return*/];
+                cmd = message.content.replace(prefix, "");
+                if (cmd.startsWith("a")) {
+                    cmd = cmd.replace("a", "").trim();
+                    line = bus.find(cmd, stops)[0];
+                    setEmebd(line, message);
+                }
+                // Commande !l
+                else if (cmd.startsWith("l")) {
+                    cmd = cmd.replace("l", "").trim();
+                    lines = bus.find(cmd, stops).slice(0, 10);
+                    embed = new discord_js_1.MessageEmbed().setTitle("Arret sugérer")
+                        .setAuthor({ name: "Ozraam", iconURL: "https://styles.redditmedia.com/t5_w4hl3/styles/profileIcon_k1wvp2mtezk81.png" });
+                    f = "";
+                    n = 1;
+                    for (_i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
+                        line = lines_1[_i];
+                        f += n + " - " + line.name + "\n";
+                        n++;
+                    }
+                    embed.addField("Arret disponible:", f);
+                    embed.description = "Taper 1-10 pour afficher les prochain passage";
+                    message.channel.send({ embeds: [embed] });
+                    attenteSuggestion.set(message.author, lines);
+                    console.log(attenteSuggestion.size);
+                }
+                // Commande !f
+                else if (cmd.startsWith("f")) {
+                    cmd = cmd.replace("f", "").trim();
+                    if (cmd == "switch") {
+                        if (!fliterConfig.has(message.author))
+                            return [2 /*return*/];
+                        fil_1 = fliterConfig.get(message.author);
+                        fil_1.on = !fil_1.on;
+                        fliterConfig.set(message.author, fil_1);
+                        message.channel.send("Filter for ".concat(message.author, " has been set on ").concat(fil_1.on ? "ON" : "OFF"));
+                        return [2 /*return*/];
+                    }
+                    else if (cmd.startsWith("remove") || cmd.startsWith("r ")) {
+                        if (cmd.startsWith("remove"))
+                            cmd = cmd.replace("remove", "").trim();
+                        else
+                            cmd = cmd.replace("r", "").trim();
+                        fil_2 = fliterConfig.get(message.author);
+                        if (fil_2.list.includes(cmd)) {
+                            fil_2.list.splice(fil_2.list.indexOf(cmd), 1);
+                        }
+                        if (fil_2.list.length != 0) {
+                            fliterConfig.set(message.author, fil_2);
+                            message.channel.send("".concat(message.author, " filtre ").concat(cmd, " supprimer"));
+                        }
+                        else {
+                            fliterConfig["delete"](message.author);
+                            message.channel.send("".concat(message.author, " Plus aucun filtre, retour aux filtre par defaut"));
+                        }
+                        return [2 /*return*/];
+                    }
+                    if (!fliterConfig.has(message.author)) {
+                        fliterConfig.set(message.author, new UserFilter());
+                    }
+                    fil = fliterConfig.get(message.author);
+                    fil.list.push(cmd);
+                    fliterConfig.set(message.author, fil);
+                    message.channel.send("Filtre ajouter");
+                }
+                // commande help
+                else if (cmd.startsWith("h") || cmd.startsWith("help")) {
+                    embed = new discord_js_1.MessageEmbed().setTitle("Aide")
+                        .setAuthor({ name: "Ozraam", iconURL: "https://styles.redditmedia.com/t5_w4hl3/styles/profileIcon_k1wvp2mtezk81.png" })
+                        .addField("".concat(prefix, "a NomArret"), "Affiche l'arriver des prochains bus à l'arret donner")
+                        .addField("".concat(prefix, "l NomArret"), "Affiche une liste d'arret potentiel par rapport aux texte donner")
+                        .addField("".concat(prefix, "f [r] filtre"), "ajoute un filtre qui sera appliquer aux prochaine recherche\najoutez r dans la commande pour supprimer le filtre");
+                    message.channel.send({ embeds: [embed] });
+                }
+                return [2 /*return*/];
             });
         });
     };
     return Bot;
 }());
+var prefix = "?";
 var attenteSuggestion = new discord_js_1.Collection();
 var stops = JSON.parse((0, fs_1.readFileSync)("./src/data/stops.json").toString());
 var fliterConfig = new Map();
